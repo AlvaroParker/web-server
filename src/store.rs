@@ -1,17 +1,23 @@
 use tokio::sync::RwLock;
 
-use super::question::question::{Question, QuestionId};
 use std::{collections::HashMap, sync::Arc};
+
+use crate::types::{
+    answer::{Answer, AnswerId},
+    question::{Question, QuestionId},
+};
 
 #[derive(Clone)]
 pub struct Store {
     questions: Arc<RwLock<HashMap<QuestionId, Question>>>,
+    answers: Arc<RwLock<HashMap<AnswerId, Answer>>>,
 }
 
 impl Store {
     pub fn new() -> Self {
         Self {
             questions: Arc::new(RwLock::new(Self::init())),
+            answers: Arc::new(RwLock::new(HashMap::new())),
         }
     }
     pub fn init() -> HashMap<QuestionId, Question> {
@@ -20,5 +26,8 @@ impl Store {
     }
     pub fn get_questions(&self) -> &Arc<RwLock<HashMap<QuestionId, Question>>> {
         &self.questions
+    }
+    pub fn get_anwsers(&self) -> &Arc<RwLock<HashMap<AnswerId, Answer>>> {
+        &self.answers
     }
 }
