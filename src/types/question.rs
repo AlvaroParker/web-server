@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Tags(Option<Vec<String>>);
 
+/// QuestionId. Each `Question` struct must have a unique `QuestionId`.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
 pub struct QuestionId(String);
 impl QuestionId {
@@ -21,6 +22,7 @@ pub struct Question {
 }
 
 impl Question {
+    /// Get the unique `QuestionId` from the `Question`.
     pub fn get_id(&self) -> QuestionId {
         self.id.clone()
     }

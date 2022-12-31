@@ -7,7 +7,7 @@ use crate::types::{
     question::{Question, QuestionId},
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Store {
     questions: Arc<RwLock<HashMap<QuestionId, Question>>>,
     answers: Arc<RwLock<HashMap<AnswerId, Answer>>>,
