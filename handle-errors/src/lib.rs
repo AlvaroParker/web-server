@@ -5,11 +5,14 @@ use warp::hyper::StatusCode;
 use warp::reject::Reject;
 use warp::{Rejection, Reply};
 
+use sqlx::error::Error as SqlxError;
+
 #[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
     MissingParameters,
     QuestionNotFound,
+    DatabaseQueryError(SqlxError),
 }
 
 impl Display for Error {
@@ -23,6 +26,9 @@ impl Display for Error {
             }
             Error::QuestionNotFound => {
                 write!(f, "Question not found")
+            }
+            Error::DatabaseQueryError(e) => {
+                write!(f, "Query could not be executed: {}", e)
             }
         }
     }

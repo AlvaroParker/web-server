@@ -4,7 +4,7 @@ use super::question::QuestionId;
 
 /// AnswerId `struct` to individualize each anwser for each Question.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Hash)]
-pub struct AnswerId(String);
+pub struct AnswerId(i32);
 
 /// Answer `struct` used to save answer of each questions.
 /// Each `Answer` struct has a unique `AnswerId`
@@ -15,8 +15,14 @@ pub struct Answer {
     question_id: QuestionId,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NewAnswer {
+    pub content: String,
+    pub question_id: QuestionId,
+}
+
 impl AnswerId {
-    pub fn new(id: String) -> AnswerId {
+    pub fn new(id: i32) -> AnswerId {
         AnswerId(id)
     }
 }
@@ -27,8 +33,5 @@ impl Answer {
             content,
             question_id,
         }
-    }
-    pub fn get_id(&self) -> &AnswerId {
-        &self.id
     }
 }

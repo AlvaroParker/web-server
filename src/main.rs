@@ -10,15 +10,15 @@ mod types;
 
 #[tokio::main]
 async fn main() {
-    let routes = create_routes();
+    let routes = create_routes().await;
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
 
-fn create_routes() -> BoxedFilter<(impl Reply,)> {
+async fn create_routes() -> BoxedFilter<(impl Reply,)> {
     let log_filter =
         std::env::var("RUST_LOG").unwrap_or_else(|_| "server1=info,warp=error".to_owned());
 
-    let store = Store::new();
+    let store = Store::new("postgres://parker:parker@localhost:5432/rustwebdev").await;
     let store_filter = warp::any().map(move || store.clone());
 
     tracing_subscriber::fmt()
@@ -49,8 +49,8 @@ fn create_routes() -> BoxedFilter<(impl Reply,)> {
         }));
 
     let get_item = warp::get()
-        .and(warp::path("questions"))
-        .and(warp::path::param::<String>())
+        .and(warp::path("question"))
+        .and(warp::path::param())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and_then(routes::question::get_question);
@@ -64,7 +64,7 @@ fn create_routes() -> BoxedFilter<(impl Reply,)> {
 
     let update_question = warp::put()
         .and(warp::path("questions"))
-        .and(warp::path::param::<String>())
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and(warp::body::json())
@@ -72,7 +72,7 @@ fn create_routes() -> BoxedFilter<(impl Reply,)> {
 
     let delete_question = warp::delete()
         .and(warp::path("question"))
-        .and(warp::path::param::<String>())
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and_then(routes::question::delete_question);

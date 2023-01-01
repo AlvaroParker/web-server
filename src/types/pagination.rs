@@ -1,55 +1,28 @@
 use handle_errors::Error;
-use std::{collections::HashMap, usize};
+use std::collections::HashMap;
 
 /// Pagination struct, which is gettings extract
 /// for query params
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Pagination {
-    start: usize,
-    end: usize,
+    pub limit: Option<u32>,
+    pub offset: u32,
 }
 
-impl Pagination {
-    /// Returns the `end` of the Pagination
-    pub fn get_end(&self) -> usize {
-        self.end
-    }
-    /// Returns the `start` of the Pagination
-    pub fn get_start(&self) -> usize {
-        self.start
-    }
-    /// Sets the `end` value of the Pagination
-    pub fn set_end(&mut self, end: usize) {
-        self.end = end;
-    }
-}
-
-/// Creates a new Pagination struct instance from query params.
-/// # EXAMPLE QUERY
-/// Return the questions using pagination
-/// `/questions?start=0&end=10`
-/// ```rust
-/// use std::collections::HashMap;
-///
-/// let mut query = HashMap::new();
-/// query.insert("start".to_string(), "1".to_string());
-/// query.insert("end".to_string(), "10".to_string());
-/// let p = pagination::extract_pagination(query).unwrap();
-/// assert_eq!(p.start, 1);
-/// assert_eq!(p.end, 10);
-/// ```
 pub fn extract_pagination(params: HashMap<String, String>) -> Result<Pagination, Error> {
-    if params.contains_key("start") && params.contains_key("end") {
+    if params.contains_key("limit") && params.contains_key("offset") {
         return Ok(Pagination {
-            start: params
-                .get("start")
+            limit: Some(
+                params
+                    .get("limit")
+                    .unwrap()
+                    .parse::<u32>()
+                    .map_err(Error::ParseError)?,
+            ),
+            offset: params
+                .get("offset")
                 .unwrap()
-                .parse::<usize>()
-                .map_err(Error::ParseError)?,
-            end: params
-                .get("end")
-                .unwrap()
-                .parse::<usize>()
+                .parse::<u32>()
                 .map_err(Error::ParseError)?,
         });
     }
